@@ -17,14 +17,14 @@ namespace RadioStatistics
         // 4 
         public IEnumerable<ArtistMetadata> GetArtistsAndAlbumCount()
         {
-            return Artists.ToList().Select(a => new ArtistMetadata { Name = a.Name, AlbumCount = a.Albums.Count() });
+            return Artists.ToList().Select(a => new ArtistMetadata { Name = a.Name, AlbumCount = a.Albums.Count() }).ToList();
         }
 
 
         // 2
         public IEnumerable<Artist> GetArtistsOrderdByName()
         {
-            return Artists.OrderBy(a => a.Name);
+            return Artists.OrderBy(a => a.Name).ToList();
         }
 
 
@@ -37,17 +37,19 @@ namespace RadioStatistics
         // 1
         public IEnumerable<Artist> GetCatchyNamedArtists()
         {
-            return Artists.Where(a => a.Name.Length < 7);
+            return Artists.Where(a => a.Name.Length < 7).ToList();
         }
 
+        // 7 
         public IEnumerable<Artist> GetDiggingArtists()
         {
-            throw new NotImplementedException();
+            return Artists.Where(artis => artis.Albums.Any(t => t.Tracks.Any(d => d.Duration.TotalHours == 1))).ToList();
         }
 
+        // 9
         public IEnumerable<Artist> GetEligibleForIsraelArtists()
         {
-            throw new NotImplementedException();
+            return Artists.Where(artis => artis.Albums.Any(t => t.Tracks.Sum(d => d.Duration.TotalMinutes) >= 120)).ToList();
         }
 
 
@@ -57,15 +59,26 @@ namespace RadioStatistics
             return Artists.FirstOrDefault(a => a.Albums.Count() == 2);
         }
 
+
+        // 8
         public IEnumerable<Artist> GetSlackerArtists()
         {
-            throw new NotImplementedException();
+            return Artists.Where(artis => artis.Albums.Any(t => t.Tracks.Count(d => d.Duration.TotalSeconds < 60) >= 2)).ToList();
         }
 
         // 6
         public IEnumerable<Artist> GetYoungArtists()
         {
-            return Artists.Where(a => a.Albums.Count() > 0 && a.Albums.Count() <= 2);
+            return Artists.Where(a => a.Albums.Count() > 0 && a.Albums.Count() <= 2).ToList();
+        }
+
+
+
+        // 10
+        public IEnumerable<Artist> GetWritersBlockArtists() 
+        {
+            return Artists.Where(artis => artis.Albums.Any(t => t.Tracks.GroupBy(g => g.Name).Count() >= 3)).ToList();
+            
         }
     }
 }
